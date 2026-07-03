@@ -63,17 +63,11 @@ if file1:
 st.write("---")
 
 
+if "reports" not in st.session_state:
+    st.session_state["reports"] = []
 
-if "new_reports" not in st.session_state:
-    st.session_state["new_reports"] = []
-
-add_new = st.button("تلخيص تقرير جديد")
-
-if add_new:
-    st.session_state["new_reports"].append({"uploaded": False})
-
-for i, report in enumerate(st.session_state["new_reports"]):
-    st.write(f"#### التقرير الجديد رقم {i+1}")
+for i, report in enumerate(st.session_state["reports"]):
+    st.write(f"#### تقرير رقم {i+1}")
 
     file2 = st.file_uploader(
         "ارفع هنا تقرير PDF",
@@ -81,7 +75,7 @@ for i, report in enumerate(st.session_state["new_reports"]):
         key=f"pdf_new_{i}"
     )
 
-    if file2 and not report["uploaded"]:
+    if file2 and not report.get("uploaded", False):
         with pdfplumber.open(file2) as pdf:
             text2 = ""
             for page in pdf.pages:
@@ -93,11 +87,16 @@ for i, report in enumerate(st.session_state["new_reports"]):
         report["uploaded"] = True
         report["summary"] = summary2
 
-    if report["uploaded"]:
-        st.write(f"## ملخص التقرير الجديد رقم {i+1}")
+    if report.get("uploaded", False):
+        st.write(f"## ملخص تقرير رقم {i+1}")
         st.write(report["summary"])
 
     st.write("---")
+
+
+
+if st.button("تلخيص تقرير جديد"):
+    st.session_state["reports"].append({"uploaded": False})
 
 
 st.write("### إذا أردت طباعة الملخص بصيغة PDF اضغط Ctrl + P")
