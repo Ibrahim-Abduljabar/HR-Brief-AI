@@ -8,16 +8,16 @@ API_KEY = st.secrets["API_BBB"]
 def detect_language(text):
     if re.search(r'[\u0600-\u06FF]', text):
         return "arabic"
-    else:
-        return "english"
+    return "english"
 
 def summarize_text(text):
     lang = detect_language(text)
 
-    if lang == "arabic":
-        system_msg = "لخّص النص التالي باللغة العربية فقط."
-    else:
-        system_msg = "Summarize the text in English only."
+    system_msg = (
+        "لخّص النص التالي باللغة العربية فقط."
+        if lang == "arabic"
+        else "Summarize the text in English only."
+    )
 
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -44,13 +44,6 @@ st.set_page_config(page_title="HR Brief AI", layout="wide")
 st.title("HR Brief AI")
 st.write("### أداة تلخيص تقارير الموارد البشرية باستخدام الذكاء الاصطناعي")
 
-if "summaries" not in st.session_state:
-    st.session_state["summaries"] = []
-
-if "show_second" not in st.session_state:
-    st.session_state["show_second"] = False
-
-
 st.write("#### التقرير الأول")
 file1 = st.file_uploader("ارفع تقرير PDF الأول هنا", type=["pdf"], key="pdf1")
 
@@ -62,21 +55,25 @@ if file1:
             if t:
                 text += t + "\n"
 
-    summary = summarize_text(text)
-    st.session_state["summaries"].append(("التقرير الأول", summary))
+    summary1 = summarize_text(text)
+    st.write("## ملخص التقرير الأول")
+    st.write(summary1)
 
-for idx, (label, s) in enumerate(st.session_state["summaries"], start=1):
-    st.write(f"## ملخص {label} (رقم {idx})")
-    st.write(s)
-    st.write("---")
+st.write("---")
+
+if "second_reports" not in st.session_state:
+    st.session_state["second_reports"] = []
 
 if st.button("تلخيص تقرير ثاني"):
-    st.session_state["show_second"] = True
+    st.session_state["second_reports"].append(None)
 
-
-if st.session_state["show_second"]:
-    st.write("#### التقرير الثاني")
-    file2 = st.file_uploader("ارفع تقرير PDF الثاني هنا", type=["pdf"], key="pdf2")
+for i in range(len(st.session_state["second_reports"])):
+    st.write(f"#### التقرير الثاني رقم {i+1}")
+    file2 = st.file_uploader(
+        "ارفع هنا تقرير PDF",
+        type=["pdf"],
+        key=f"pdf2_{i}"
+    )
 
     if file2:
         with pdfplumber.open(file2) as pdf:
@@ -87,4 +84,7 @@ if st.session_state["show_second"]:
                     text2 += t2 + "\n"
 
         summary2 = summarize_text(text2)
-        st.session_state["summaries"].append(("التقرير الثاني", summary2))
+        st.write(f"## ملخص التقرير الثاني رقم {i+1}")
+        st.write(summary2)
+
+    st.write("---")
