@@ -64,22 +64,24 @@ st.write("---")
 
 
 
-if "second_reports" not in st.session_state:
-    st.session_state["second_reports"] = []
+if "new_reports" not in st.session_state:
+    st.session_state["new_reports"] = []
 
-if st.button("تلخيص تقرير جديد"):
-    st.session_state["second_reports"].append(None)
-    st.experimental_rerun()
+add_new = st.button("تلخيص تقرير جديد")
 
-for i in range(len(st.session_state["second_reports"])):
+if add_new:
+    st.session_state["new_reports"].append({"uploaded": False})
+
+for i, report in enumerate(st.session_state["new_reports"]):
     st.write(f"#### التقرير الجديد رقم {i+1}")
+
     file2 = st.file_uploader(
         "ارفع هنا تقرير PDF",
         type=["pdf"],
-        key=f"pdf2_{i}"
+        key=f"pdf_new_{i}"
     )
 
-    if file2:
+    if file2 and not report["uploaded"]:
         with pdfplumber.open(file2) as pdf:
             text2 = ""
             for page in pdf.pages:
@@ -88,8 +90,12 @@ for i in range(len(st.session_state["second_reports"])):
                     text2 += t2 + "\n"
 
         summary2 = summarize_text(text2)
+        report["uploaded"] = True
+        report["summary"] = summary2
+
+    if report["uploaded"]:
         st.write(f"## ملخص التقرير الجديد رقم {i+1}")
-        st.write(summary2)
+        st.write(report["summary"])
 
     st.write("---")
 
