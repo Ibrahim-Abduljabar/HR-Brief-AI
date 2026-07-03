@@ -62,7 +62,7 @@ for idx, (label, s) in enumerate(st.session_state["summaries"], start=1):
     st.write(s)
     st.write("---")
 
--
+
 st.write("### إذا أردت تلخيص تقرير ثاني:")
 if st.button("تلخيص التقرير الثاني"):
     st.session_state["show_second_uploader"] = True
