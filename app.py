@@ -44,6 +44,7 @@ st.set_page_config(page_title="HR Brief AI", layout="wide")
 st.title("HR Brief AI")
 st.write("### أداة تلخيص تقارير الموارد البشرية باستخدام الذكاء الاصطناعي")
 
+
 st.write("#### التقرير الأول")
 file1 = st.file_uploader("ارفع تقرير PDF الأول هنا", type=["pdf"], key="pdf1")
 
@@ -61,14 +62,17 @@ if file1:
 
 st.write("---")
 
+
+
 if "second_reports" not in st.session_state:
     st.session_state["second_reports"] = []
 
-if st.button("تلخيص تقرير ثاني"):
+if st.button("تلخيص تقرير جديد"):
     st.session_state["second_reports"].append(None)
+    st.experimental_rerun()
 
 for i in range(len(st.session_state["second_reports"])):
-    st.write(f"#### التقرير الثاني رقم {i+1}")
+    st.write(f"#### التقرير الجديد رقم {i+1}")
     file2 = st.file_uploader(
         "ارفع هنا تقرير PDF",
         type=["pdf"],
@@ -84,7 +88,10 @@ for i in range(len(st.session_state["second_reports"])):
                     text2 += t2 + "\n"
 
         summary2 = summarize_text(text2)
-        st.write(f"## ملخص التقرير الثاني رقم {i+1}")
+        st.write(f"## ملخص التقرير الجديد رقم {i+1}")
         st.write(summary2)
 
     st.write("---")
+
+
+st.write("### إذا أردت طباعة الملخص بصيغة PDF اضغط Ctrl + P")
