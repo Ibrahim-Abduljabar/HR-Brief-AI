@@ -15,7 +15,7 @@ def summarize_text(text):
     }
 
     payload = {
-        "model": "llama-3.1-70b-versatile",
+        "model": "llama-3.1-70b-versatile-2",
         "messages": [
             {"role": "system", "content": "You are an AI specialized in summarizing HR reports."},
             {"role": "user", "content": text}
