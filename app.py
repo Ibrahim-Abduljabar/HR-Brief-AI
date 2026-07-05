@@ -2,7 +2,10 @@ import streamlit as st
 import pdfplumber
 import requests
 import re
+from logsnag import LogSnag
 
+log_client = LogSnag(token=st.secrets["LOGSNAG_TOKEN"], project="hr-brief-ai")
+log_client.track(channel="visits", event="New Visit")
 API_KEY = st.secrets["API_BBB"]
 
 def detect_language(text):
